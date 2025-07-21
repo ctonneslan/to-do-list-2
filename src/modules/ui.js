@@ -24,18 +24,30 @@ const UI = (() => {
 
     ProjectController.getProjects().forEach((project) => {
       const li = document.createElement("li");
-      li.textContent = project.name;
       li.dataset.id = project.id;
 
+      const nameSpan = document.createElement("span");
+      nameSpan.textContent = project.name;
+      nameSpan.classList.add("project-name");
       if (project.id === ProjectController.getCurrentProject()?.id) {
-        li.classList.add("active");
+        nameSpan.classList.add("active");
       }
 
-      li.addEventListener("click", () => {
+      nameSpan.addEventListener("click", () => {
         ProjectController.setCurrentProject(project.id);
         renderAll();
       });
 
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "🗑️";
+      delBtn.title = "Delete project";
+      delBtn.addEventListener("click", () => {
+        ProjectController.deleteProject(project.id);
+        renderAll();
+      });
+
+      li.appendChild(nameSpan);
+      li.appendChild(delBtn);
       list.appendChild(li);
     });
   };
@@ -56,13 +68,58 @@ const UI = (() => {
 
     project.todos.forEach((todo) => {
       const li = document.createElement("li");
-      li.textContent = `${todo.title} (Due: ${todo.dueDate})`;
+      li.classList.add("todo-item");
       li.style.color = getPriorityColor(todo.priority);
 
-      li.addEventListener("click", () => {
-        alert(`TODO:\n\n${todo.title}\n\n${todo.description}`);
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = todo.completed;
+      checkbox.addEventListener("change", () => {
+        todo.toggleComplete();
+        renderAll();
       });
 
+      const text = document.createElement("span");
+      text.textContent = `${todo.title} (Due: ${todo.dueDate})`;
+      if (todo.completed) {
+        text.style.textDecoration = "line-through";
+      }
+
+      const editBtn = document.createElement("button");
+      editBtn.textContent = "✏️";
+      editBtn.title = "Edit todo";
+      editBtn.addEventListener("click", () => {
+        const newTitle = prompt("Edit title:", todo.title);
+        const newDesc = prompt("Edit description:", todo.description);
+        const newDue = prompt("Edit due date (YYYY-MM-DD):", todo.dueDate);
+        const newPriority = prompt(
+          "Edit priority (low, medium, high):",
+          todo.priority
+        );
+
+        if (newTitle) {
+          todo.update({
+            title: newTitle,
+            description: newDesc,
+            dueDate: newDue,
+            priority: newPriority,
+          });
+          renderAll();
+        }
+      });
+
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "🗑️";
+      delBtn.title = "Delete todo";
+      delBtn.addEventListener("click", () => {
+        ProjectController.removeTodoFromCurrentProject(todo.id);
+        renderAll();
+      });
+
+      li.appendChild(checkbox);
+      li.appendChild(text);
+      li.appendChild(editBtn);
+      li.appendChild(delBtn);
       list.appendChild(li);
     });
   };

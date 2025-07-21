@@ -21,7 +21,7 @@ function createTodo({
     },
 
     update(fields) {
-      Object.assign(this, field);
+      Object.assign(this, fields);
     },
   };
 }
