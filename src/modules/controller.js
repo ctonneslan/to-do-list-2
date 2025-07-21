@@ -53,8 +53,21 @@ const ProjectController = (() => {
     }
   };
 
-  const load = (loadedProjects) => {
-    projects = loadedProjects;
+  const load = (loadedData) => {
+    projects = loadedData.map((savedProject) => {
+      const restoredProject = createProject(savedProject.name);
+      restoredProject.id = savedProject.id;
+
+      savedProject.todos.forEach((savedTodo) => {
+        const restoredTodo = createTodo(savedTodo);
+        restoredTodo.id = savedTodo.id;
+        restoredTodo.completed = savedTodo.completed;
+        restoredProject.addTodo(restoredTodo);
+      });
+
+      return restoredProject;
+    });
+
     currentProjectId = projects[0]?.id || null;
   };
 
