@@ -122,3 +122,43 @@ button:hover {
 .todo-item[style*="red"] { border-left: 5px solid var(--high); }
 .todo-item[style*="orange"] { border-left: 5px solid var(--medium); }
 .todo-item[style*="green"] { border-left: 5px solid var(--low); }
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: var(--bg-light);
+  padding: 2rem;
+  border-radius: 10px;
+  width: 400px;
+  max-width: 90%;
+  color: var(--text-light);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.hidden {
+  display: none !important;
+}

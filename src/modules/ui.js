@@ -6,15 +6,36 @@ const UI = (() => {
   const renderLayout = () => {
     app.innerHTML = `
         <div class="sidebar">
-         <h2>Projects</h2>
-         <ul id="project-list"></ul>
-         <button id="add-project-btn">+ Add Project</button>
+            <h2>Projects</h2>
+            <ul id="project-list"></ul>
+            <button id="add-project-btn">+ Add Project</button>
         </div>
         <div class="main">
-         <h2 id="project-title"></h2>
-         <ul id="todo-list"></ul>
-         <button id="add-todo-btn">+ Add Todo</button>
+            <h2 id="project-title"></h2>
+            <ul id="todo-list"></ul>
+            <button id="add-todo-btn">+ Add Todo</button>
         </div> 
+        <div id="modal-overlay" class="modal-overlay hidden">
+            <div class="modal">
+                <h2 id="modal-title">New Todo</h2>
+                <form id="todo-form">
+                    <label>Title <input type="text" id="todo-title" required></label>
+                    <label>Description <textarea id="todo-desc"></textarea></label>
+                    <label>Due Date <input type="date" id="todo-date"></label>
+                    <label>Priority
+                        <select id="todo-priority">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </label>
+                    <div class="modal-actions">
+                        <button type="submit">Save</button>
+                        <button type="button" id="cancel-modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     `;
   };
 
@@ -89,23 +110,7 @@ const UI = (() => {
       editBtn.textContent = "✏️";
       editBtn.title = "Edit todo";
       editBtn.addEventListener("click", () => {
-        const newTitle = prompt("Edit title:", todo.title);
-        const newDesc = prompt("Edit description:", todo.description);
-        const newDue = prompt("Edit due date (YYYY-MM-DD):", todo.dueDate);
-        const newPriority = prompt(
-          "Edit priority (low, medium, high):",
-          todo.priority
-        );
-
-        if (newTitle) {
-          todo.update({
-            title: newTitle,
-            description: newDesc,
-            dueDate: newDue,
-            priority: newPriority,
-          });
-          renderAll();
-        }
+        openModal(todo);
       });
 
       const delBtn = document.createElement("button");
@@ -147,18 +152,40 @@ const UI = (() => {
     });
 
     document.getElementById("add-todo-btn").addEventListener("click", () => {
-      const title = prompt("Todo title?");
-      const dueDate = prompt("Due date? (YYYY-MM-DD)");
-      const priority = prompt("Priority? (low, medium, high)");
+      openModal();
+    });
 
-      if (title) {
+    document
+      .getElementById("cancel-modal")
+      .addEventListener("click", closeModal);
+
+    document.getElementById("todo-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById("todo-title").value;
+      const description = document.getElementById("todo-desc").value;
+      const dueDate = document.getElementById("todo-date").value;
+      const priority = document.getElementById("todo-priority").value;
+
+      const project = ProjectController.getCurrentProject();
+      if (!project) return;
+
+      if (isEditing) {
+        const todo = project.getTodo(editingTodoId);
+        if (todo) {
+          todo.update({ title, description, dueDate, priority });
+        }
+      } else {
         ProjectController.addTodoToCurrentProject({
           title,
+          description,
           dueDate,
           priority,
         });
-        renderAll();
       }
+
+      closeModal();
+      renderAll();
     });
   };
 
@@ -167,6 +194,29 @@ const UI = (() => {
     renderProjects();
     renderTodos();
     bindEvents();
+  };
+
+  let isEditing = false;
+  let editingTodoId = null;
+
+  const openModal = (todo = null) => {
+    const modal = document.getElementById("modal-overlay");
+    modal.classList.remove("hidden");
+
+    document.getElementById("modal-title").textContent = todo
+      ? "Edit todo"
+      : "New Todo";
+    document.getElementById("todo-title").value = todo?.title || "";
+    document.getElementById("todo-desc").value = todo?.description || "";
+    document.getElementById("todo-date").value = todo?.dueDate || "";
+    document.getElementById("todo-priority").value = todo?.priority || "low";
+
+    isEditing = !!todo;
+    editingTodoId = todo?.id || null;
+  };
+
+  const closeModal = () => {
+    document.getElementById("modal-overlay").classList.add("hidden");
   };
 
   return { initApp: renderAll };
