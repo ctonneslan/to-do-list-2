@@ -1,28 +1,30 @@
-/* src/style.css */
-
 :root {
-  --bg-dark: #1e1e1e;
-  --bg-light: #2d2d2d;
-  --text-light: #f0f0f0;
+  --bg: #1a1a1a;
+  --panel: #242424;
+  --surface: #2c2c2c;
   --accent: #4e9af1;
-  --low: #8fbc8f;
-  --medium: #ffa500;
-  --high: #ff5e5e;
-  --border: #444;
+  --text: #f5f5f5;
+  --muted: #999;
+  --low: #7ed6a2;
+  --medium: #f1c40f;
+  --high: #e74c3c;
+  --radius: 8px;
+  --shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
 }
 
 body {
-  background-color: var(--bg-dark);
-  color: var(--text-light);
+  background-color: var(--bg);
+  color: var(--text);
   display: flex;
   height: 100vh;
+  overflow: hidden;
 }
 
 #app {
@@ -33,102 +35,127 @@ body {
 /* Sidebar */
 .sidebar {
   width: 250px;
-  background-color: var(--bg-light);
-  padding: 1rem;
-  border-right: 1px solid var(--border);
+  background-color: var(--panel);
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  border-right: 1px solid #333;
 }
 
 .sidebar h2 {
-  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+  color: var(--accent);
 }
 
 #project-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
   list-style: none;
+}
+
+#project-list li {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#project-list li:hover {
+  background: #3a3a3a;
+}
+
+.project-name {
+  flex: 1;
+}
+
+.project-name.active {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s ease;
+}
+
+button:hover {
+  background: #3e82ce;
+}
+
+/* Main Panel */
+.main {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  overflow-y: auto;
+}
+
+#project-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+#todo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  list-style: none;
+}
+
+.todo-item {
+  background-color: var(--surface);
+  border-radius: var(--radius);
+  padding: 1rem;
+  box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-#project-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: var(--bg-dark);
-  padding: 0.5rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-#project-list li:hover {
-  background-color: var(--accent);
-}
-
-.project-name.active {
-  font-weight: bold;
-  color: var(--accent);
-}
-
-button {
-  background-color: var(--accent);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 0.4rem 0.6rem;
-  cursor: pointer;
-  transition: background 0.2s;
-  margin-left: 0.25rem;
-}
-
-button:hover {
-  background-color: #357fd3;
-}
-
-/* Main Area */
-.main {
-  flex: 1;
-  padding: 2rem;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-#todo-list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.todo-item {
-  background-color: var(--bg-light);
-  padding: 1rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
+.todo-header {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-.todo-item span {
+.todo-header span {
   flex: 1;
 }
 
-/* Priority colors */
+.todo-details {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.todo-details ul {
+  padding-left: 1rem;
+  margin-top: 0.5rem;
+}
+
 .todo-item[style*="red"] { border-left: 5px solid var(--high); }
 .todo-item[style*="orange"] { border-left: 5px solid var(--medium); }
 .todo-item[style*="green"] { border-left: 5px solid var(--low); }
 
+/* Modal */
 .modal-overlay {
   position: fixed;
-  top: 0; left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.7);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -136,78 +163,61 @@ button:hover {
 }
 
 .modal {
-  background-color: var(--bg-light);
+  background-color: var(--panel);
   padding: 2rem;
-  border-radius: 10px;
-  width: 400px;
-  max-width: 90%;
-  color: var(--text-light);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 450px;
+  box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.modal h2 {
+  font-size: 1.2rem;
+  color: var(--accent);
 }
 
 .modal label {
   display: flex;
   flex-direction: column;
+  font-size: 0.9rem;
   gap: 0.25rem;
+}
+
+.modal input,
+.modal textarea,
+.modal select {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid #444;
+  border-radius: var(--radius);
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+.modal textarea {
+  resize: vertical;
 }
 
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .hidden {
   display: none !important;
 }
 
-.todo-item {
-  flex-direction: column;
-}
-
-.todo-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  width: 100%;
-}
-
-.todo-details {
-  margin-top: 0.5rem;
-  background-color: var(--bg-dark);
-  padding: 0.75rem;
-  border-radius: 6px;
-  width: 100%;
-}
-
-.hidden {
-  display: none;
-}
-
-#checklist-items {
-  list-style: none;
-  padding-left: 0;
-  margin-top: 0.5rem;
-}
-
+/* Checklist */
 #checklist-items li {
+  font-size: 0.9rem;
+  background: var(--bg);
+  padding: 0.3rem 0.5rem;
+  border-radius: var(--radius);
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.25rem;
-  background-color: var(--bg-dark);
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-}
-
-#checklist-items input[type="checkbox"] {
-  margin-right: 0.5rem;
-}
-
-.checklist-add {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
+  align-items: center;
 }
