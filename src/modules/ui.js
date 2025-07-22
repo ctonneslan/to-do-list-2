@@ -112,6 +112,9 @@ const UI = (() => {
       li.classList.add("todo-item");
       li.style.color = getPriorityColor(todo.priority);
 
+      const header = document.createElement("div");
+      header.classList.add("todo-header");
+
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
       checkbox.checked = todo.completed;
@@ -120,10 +123,10 @@ const UI = (() => {
         renderAll();
       });
 
-      const text = document.createElement("span");
-      text.textContent = `${todo.title} (Due: ${todo.dueDate})`;
+      const titleSpan = document.createElement("span");
+      titleSpan.textContent = `${todo.title} (Due: ${todo.dueDate})`;
       if (todo.completed) {
-        text.style.textDecoration = "line-through";
+        titleSpan.style.textDecoration = "line-through";
       }
 
       const editBtn = document.createElement("button");
@@ -141,10 +144,37 @@ const UI = (() => {
         renderAll();
       });
 
-      li.appendChild(checkbox);
-      li.appendChild(text);
-      li.appendChild(editBtn);
-      li.appendChild(delBtn);
+      const expandBtn = document.createElement("button");
+      expandBtn.textContent = "▼";
+      expandBtn.title = "Expand details";
+      expandBtn.addEventListener("click", () => {
+        details.classList.toggle("hidden");
+        expandBtn.textContent = details.classList.contains("hidden")
+          ? "▼"
+          : "▲";
+      });
+
+      header.append(checkbox, titleSpan, expandBtn, editBtn, delBtn);
+      li.appendChild(header);
+
+      const details = document.createElement("div");
+      details.classList.add("todo-details", "hidden");
+      details.innerHTML = `
+        <p><strong>Description:</strong> ${todo.description || "None"}</p>
+        <p><strong>Notes:</strong> ${todo.notes || "None"}</p>
+        ${
+          todo.checklist?.length
+            ? `<ul><strong>Checklist:</strong> ${todo.checklist
+                .map(
+                  (item) => `<li>${item.checked ? "✅" : "⬜"} 
+                    ${item.item}</li>`
+                )
+                .join("")}</ul>`
+            : ""
+        }
+      `;
+
+      li.appendChild(details);
       list.appendChild(li);
     });
   };

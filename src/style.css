@@ -162,3 +162,26 @@ button:hover {
 .hidden {
   display: none !important;
 }
+
+.todo-item {
+  flex-direction: column;
+}
+
+.todo-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.todo-details {
+  margin-top: 0.5rem;
+  background-color: var(--bg-dark);
+  padding: 0.75rem;
+  border-radius: 6px;
+  width: 100%;
+}
+
+.hidden {
+  display: none;
+}
