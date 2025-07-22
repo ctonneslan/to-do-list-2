@@ -36,6 +36,18 @@ const UI = (() => {
                 </form>
             </div>
         </div>
+        <div id="project-modal-overlay" class="modal-overlay hidden">
+            <div class="modal">
+                <h2 id="project-modal-title">New Project</h2>
+                <form id="project-form">
+                    <label>Project Name <input type="text" id="project-name-input" required></label>
+                    <div class="modal-actions">
+                        <button type="submit">Save</button>
+                        <button type="button" id="cancel-project-modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     `;
   };
 
@@ -67,7 +79,15 @@ const UI = (() => {
         renderAll();
       });
 
+      const editBtn = document.createElement("button");
+      editBtn.textContent = "✏️";
+      editBtn.title = "Edit project";
+      editBtn.addEventListener("click", () => {
+        openProjectModal(project);
+      });
+
       li.appendChild(nameSpan);
+      li.appendChild(editBtn);
       li.appendChild(delBtn);
       list.appendChild(li);
     });
@@ -144,11 +164,32 @@ const UI = (() => {
 
   const bindEvents = () => {
     document.getElementById("add-project-btn").addEventListener("click", () => {
-      const name = prompt("Project name?");
-      if (name) {
-        ProjectController.addProject(name);
-        renderAll();
+      openProjectModal();
+    });
+
+    document
+      .getElementById("cancel-project-modal")
+      .addEventListener("click", closeProjectModal);
+
+    document.getElementById("project-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("project-name-input").value;
+      if (!name) return;
+
+      if (isProjectEditing) {
+        const project = ProjectController.getProjects().find(
+          (p) => p.id === editingProjectId
+        );
+        if (project) {
+          project.name = name;
+        } else {
+          ProjectController.addProject(name);
+        }
       }
+
+      closeProjectModal();
+      renderAll();
     });
 
     document.getElementById("add-todo-btn").addEventListener("click", () => {
@@ -217,6 +258,26 @@ const UI = (() => {
 
   const closeModal = () => {
     document.getElementById("modal-overlay").classList.add("hidden");
+  };
+
+  let isProjectEditing = false;
+  let editingProjectId = null;
+
+  const openProjectModal = (project = null) => {
+    const overlay = document.getElementById("project-modal-overlay");
+    overlay.classList.remove("hidden");
+
+    document.getElementById("project-modal-title").textContent = project
+      ? "Edit Project"
+      : "New Project";
+    document.getElementById("project-name-input").value = project?.name || "";
+
+    isProjectEditing = !!project;
+    editingProjectId = project?.id || null;
+  };
+
+  const closeProjectModal = () => {
+    document.getElementById("project-modal-overlay").classList.add("hidden");
   };
 
   return { initApp: renderAll };
