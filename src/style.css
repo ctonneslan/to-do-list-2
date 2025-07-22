@@ -185,3 +185,29 @@ button:hover {
 .hidden {
   display: none;
 }
+
+#checklist-items {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 0.5rem;
+}
+
+#checklist-items li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+  background-color: var(--bg-dark);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+#checklist-items input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+.checklist-add {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}

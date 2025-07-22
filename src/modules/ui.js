@@ -29,6 +29,16 @@ const UI = (() => {
                             <option value="high">High</option>
                         </select>
                     </label>
+
+                    <div id="checklist-container">
+                        <label>Checklist</label>
+                        <ul id="checklist-items"></ul>
+                        <div class="checklist-add">
+                            <input type="text" id="checklist-input" placeholder="Add checklist item...">
+                            <button type="button" id="add-checklist-btn">+</button>
+                        </div>
+                    </div>
+
                     <div class="modal-actions">
                         <button type="submit">Save</button>
                         <button type="button" id="cancel-modal">Cancel</button>
@@ -244,7 +254,13 @@ const UI = (() => {
       if (isEditing) {
         const todo = project.getTodo(editingTodoId);
         if (todo) {
-          todo.update({ title, description, dueDate, priority });
+          todo.update({
+            title,
+            description,
+            dueDate,
+            priority,
+            checklist: currentChecklist,
+          });
         }
       } else {
         ProjectController.addTodoToCurrentProject({
@@ -252,12 +268,27 @@ const UI = (() => {
           description,
           dueDate,
           priority,
+          checklist: currentChecklist,
         });
       }
 
       closeModal();
       renderAll();
     });
+
+    document
+      .getElementById("add-checklist-btn")
+      .addEventListener("click", () => {
+        const input = document.getElementById("checklist-input");
+        const text = input.value.trim();
+        if (!text) {
+          return;
+        }
+
+        currentChecklist.push({ item: text, checked: false });
+        input.value = "";
+        renderChecklist();
+      });
   };
 
   const renderAll = () => {
@@ -284,6 +315,9 @@ const UI = (() => {
 
     isEditing = !!todo;
     editingTodoId = todo?.id || null;
+
+    currentChecklist = todo?.checklist ? [...todo.checklist] : [];
+    renderChecklist();
   };
 
   const closeModal = () => {
@@ -308,6 +342,39 @@ const UI = (() => {
 
   const closeProjectModal = () => {
     document.getElementById("project-modal-overlay").classList.add("hidden");
+  };
+
+  let currentChecklist = [];
+
+  const renderChecklist = () => {
+    const list = document.getElementById("checklist-items");
+    list.innerHTML = "";
+
+    currentChecklist.forEach((item, index) => {
+      const li = document.createElement("li");
+      const label = document.createElement("label");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = item.checked;
+      checkbox.addEventListener("change", () => {
+        item.checked = checkbox.checked;
+      });
+
+      const span = document.createElement("span");
+      span.textContent = item.item;
+
+      label.append(checkbox, span);
+
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "🗑️";
+      delBtn.addEventListener("click", () => {
+        currentChecklist.splice(index, 1);
+        renderChecklist();
+      });
+
+      li.append(label, delBtn);
+      list.appendChild(li);
+    });
   };
 
   return { initApp: renderAll };
