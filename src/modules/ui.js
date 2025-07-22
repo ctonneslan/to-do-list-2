@@ -67,6 +67,7 @@ const UI = (() => {
 
     ProjectController.getProjects().forEach((project) => {
       const li = document.createElement("li");
+      li.classList.add("fade-in", "slide-in-up");
       li.dataset.id = project.id;
 
       const nameSpan = document.createElement("span");
@@ -119,7 +120,7 @@ const UI = (() => {
 
     project.todos.forEach((todo) => {
       const li = document.createElement("li");
-      li.classList.add("todo-item");
+      li.classList.add("todo-item", "fade-in", "slide-in-up");
       li.style.color = getPriorityColor(todo.priority);
 
       const header = document.createElement("div");
@@ -158,17 +159,16 @@ const UI = (() => {
       expandBtn.textContent = "▼";
       expandBtn.title = "Expand details";
       expandBtn.addEventListener("click", () => {
-        details.classList.toggle("hidden");
-        expandBtn.textContent = details.classList.contains("hidden")
-          ? "▼"
-          : "▲";
+        const isOpen = details.classList.contains("show");
+        details.classList.toggle("show");
+        expandBtn.textContent = isOpen ? "▼" : "▲";
       });
 
       header.append(checkbox, titleSpan, expandBtn, editBtn, delBtn);
       li.appendChild(header);
 
       const details = document.createElement("div");
-      details.classList.add("todo-details", "hidden");
+      details.classList.add("todo-details");
       details.innerHTML = `
         <p><strong>Description:</strong> ${todo.description || "None"}</p>
         <p><strong>Notes:</strong> ${todo.notes || "None"}</p>
@@ -303,6 +303,7 @@ const UI = (() => {
 
   const openModal = (todo = null) => {
     const modal = document.getElementById("modal-overlay");
+    modal.querySelector(".modal").classList.add("slide-in-up");
     modal.classList.remove("hidden");
 
     document.getElementById("modal-title").textContent = todo
@@ -329,6 +330,7 @@ const UI = (() => {
 
   const openProjectModal = (project = null) => {
     const overlay = document.getElementById("project-modal-overlay");
+    overlay.querySelector(".modal").classList.add("slide-in-up");
     overlay.classList.remove("hidden");
 
     document.getElementById("project-modal-title").textContent = project
